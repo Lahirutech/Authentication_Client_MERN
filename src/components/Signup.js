@@ -17,9 +17,9 @@ const Signup = () => {
   };
   const sendRequest = async () => {
     const res = await axios
-      .post("http://localhost:5000/api/signup", {
+      .post(`${process.env.REACT_APP_BASE_URL}/api/signup`, {
         name: inputs.name,
-        email: inputs.email,
+        email: inputs.email, 
         password: inputs.password,
       })
       .catch((err) => console.log(err));

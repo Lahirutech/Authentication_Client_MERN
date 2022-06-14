@@ -7,11 +7,10 @@ const Welcome = () => {
 
   const refreshToken = async () => {
     const res = await axios
-      .get("http://localhost:5000/api/refresh", {
+      .get(`${process.env.REACT_APP_BASE_URL}/api/refresh`, {
         withCredentials: true,
       })
       .catch((err) => console.log(err));
-
     const data = await res.data;
     return data;
   };

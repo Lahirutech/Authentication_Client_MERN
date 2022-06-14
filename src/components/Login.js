@@ -20,7 +20,7 @@ const Login = () => {
   };
   const sendRequest = async () => {
     const res = await axios
-      .post("http://localhost:5000/api/login", {
+      .post(`${process.env.REACT_APP_BASE_URL}/api/login`, {
         email: inputs.email,
         password: inputs.password,
       })
@@ -71,7 +71,10 @@ const Login = () => {
             Login
           </Button>
         </Box>
+        
       </form>
+      <p>My { process.env.REACT_APP_BASE_URL} API</p>
+
     </div>
   );
 };

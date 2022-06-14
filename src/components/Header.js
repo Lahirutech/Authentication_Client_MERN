@@ -11,7 +11,7 @@ const Header = () => {
   
   const sendLogoutReq = async () => {
     try {
-      const res = await axios.post("http://localhost:5000/api/logout", null, {
+      const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/logout`, null, {
         withCredentials: true,
       });
       if (res.status == 200)
