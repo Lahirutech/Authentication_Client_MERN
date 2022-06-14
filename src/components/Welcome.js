@@ -16,7 +16,7 @@ const Welcome = () => {
   };
   const sednRequest = async () => {
     const res = await axios
-      .get("http://localhost:5000/api/user", {
+      .get(`${process.env.REACT_APP_BASE_URL}/api/user`, {
         withCredentials: true,
       })
       .catch((err) => console.log(err));
