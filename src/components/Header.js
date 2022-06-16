@@ -1,69 +1,41 @@
-import React, { useState } from "react";
-import { AppBar, Box, Tab, Tabs, Toolbar, Typography } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { authActions } from "../store";
 axios.defaults.withCredentials = true;
-const Header = () => {
-  const dispatch = useDispatch();
-  const isLoggedIn = useSelector((state) => state.isLoggedIn);
-  
-  const sendLogoutReq = async () => {
-    try {
-      const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/logout`, null, {
+let firstRender = true;
+const Welcome = () => {
+  const [user, setUser] = useState();
+
+  const refreshToken = async () => {
+    const res = await axios
+      .get(`${process.env.REACT_APP_BASE_URL}/api/refresh`, {
         withCredentials: true,
-      });
-      if (res.status == 200)
-        return res;
-    }
-    catch (ex) { 
-      console.log("catch error", ex.response.data.message)
-      //missing cookie or token
-      dispatch(authActions.logout())
-    }
- 
+      })
+      .catch((err) => console.log(err));
+
+    const data = await res.data;
+    return data;
   };
-
-  const handleLogout = () => {
-    sendLogoutReq().then(() => dispatch(authActions.logout()));
+  const sednRequest = async () => {
+    const res = await axios
+      .get(`${process.env.REACT_APP_BASE_URL}/api/user`, {
+        withCredentials: true,
+      })
+      .catch((err) => console.log(err));
+    const data = await res.data;
+    return data;
   };
+  useEffect(() => {
+    if (firstRender) {
+      firstRender = false;
+      sednRequest().then((data) => setUser(data.user));
+    }
+    let interval = setInterval(() => {
+      refreshToken().then((data) => setUser(data.user));
+    }, 1000 * 29);
+    return () => clearInterval(interval);
+  }, []);
 
-  const [value, setValue] = useState();
-
-  return (
-    <div>
-      <AppBar position="sticky">
-        <Toolbar>
-          <Typography variant="h3">MernAuth</Typography>
-          <Box sx={{ marginLeft: "auto" }}>
-            <Tabs
-              indicatorColor="secondary"
-              onChange={(e, val) => setValue(val)}
-              value={value}
-              textColor="inherit"
-            >
-              {!isLoggedIn && (
-                <>
-                  {" "}
-                  <Tab to="/login" LinkComponent={Link} label="Login" />
-                  <Tab to="/signup" LinkComponent={Link} label="Signup" />
-                </>
-              )}
-              {isLoggedIn && (
-                <Tab
-                  onClick={handleLogout}
-                  to="/"
-                  LinkComponent={Link}
-                  label="Logout"
-                />
-              )}{" "}
-            </Tabs>
-          </Box>
-        </Toolbar>
-      </AppBar>
-    </div>
-  );
+  return <div>{user && <h1>{user.name}</h1>}</div>;
 };
 
-export default Header;
+export default Welcome;
